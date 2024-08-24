@@ -1,51 +1,68 @@
-name: Automated Commit
-
-on:
-  push:
-    branches: [master] # Ensures the workflow triggers on pushes to master
-
-  schedule:
-    - cron: '0 */12 * * *' # Executes every 12 hours
-
-  workflow_dispatch: # Allows manual triggering from the GitHub UI
-
+name: e2e
+on: [push, workflow_dispatch]
+#####################################################
 permissions:
-  contents: write # Grants permissions to write to the repo
+  id-token: write # This is required for requesting the JW
+  contents: read # This is required for actions/checkout
 
 jobs:
-  update_commit:
-    runs-on: ubuntu-latest # Specifies the runner
-
+  run_nscloud_action:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [nscloud-ubuntu-22.04-amd64-4x8]
+    runs-on: ${{ matrix.os }}
+    name: Deploy to an ephemeral cluster in Namespace Cloud
     steps:
-      - name: Setup Debug Information
-        run: echo "::debug::Triggered by ref = ${{github.ref}}"
-
-      - name: Checkout Code
-        uses: actions/checkout@v3 # Latest version for optimized performance
-        with:
-          persist-credentials: true # Ensures credentials are available for subsequent steps
-          fetch-depth: 0 # Fetches all history for all branches and tags
-
-      - name: Update Timestamp File
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Set up Namespace Cloud CLI
+        uses: ./ # Uses an action in the root directory
+      - name: Set up kubectl with an ephemeral cluster in Namespace Cloud
+        uses: namespacelabs/nscloud-cluster-action@v0
+      - name: Apply configurations
         run: |
-          current_time=$(date '+%Y-%m-%d %H:%M:%S')
-          echo "Updated on $current_time" > TIMESTAMP.txt
-
-      - name: Setup Git Configuration
+          lscpu
+      - name: Wait until Redis is available
         run: |
-          git config user.email "rxmxdhxni@gmail.com"
-          git config user.name "dante4rt"
+          lscpu
 
-      - name: Prepare Commit
+  push_image:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [nscloud-ubuntu-22.04-amd64-4x8]
+    runs-on: ${{ matrix.os }}
+    name: Push an image to the Namespace Cloud registry
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Set up Namespace Cloud CLI
+        id: nscloud
+        uses: ./ # Uses an action in the root directory
+      - name: Push to private registry
         run: |
-          commit_messages=("Update: ⏰" "Refresh: 🔄" "Renew: 🌟" "Revise: 📝" "Amend: 🛠" "Adjust: 🔧" "Change: 📈" "Modify: 🖊" "Transform: 🌀" "Revamp: 🌈")
-          random_msg=${commit_messages[$RANDOM % ${#commit_messages[@]}]}
+          lscpu
 
-          git add TIMESTAMP.txt
-          git commit -m "$random_msg - $current_time" || echo "No changes to commit."
-
-      - name: GitHub Push
-        uses: ad-m/github-push-action@v0.6.0
-        with:
-          directory: '.'
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+  use_nsc_manually:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [nscloud-ubuntu-22.04-amd64-4x8]
+    runs-on: ${{ matrix.os }}
+    name: Create a Namespace Cloud cluster manually
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Set up Namespace Cloud CLI
+        uses: ./ # Uses an action in the root directory
+      - name: Create a cluster
+        run: |
+          lscpu
+      - name: Get pods
+        run: |
+          lscpu
+      - name: Release cluster
+        if: always()
+        run: |
+          lscpu
