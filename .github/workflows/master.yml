@@ -1,68 +1,45 @@
-name: e2e
-on: [push, workflow_dispatch]
-####################################################
-permissions:
-  id-token: write # This is required for requesting the JW
-  contents: read # This is required for actions/checkout
+name: Python application
+##################
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+
 
 jobs:
-  run_nscloud_action:
+  build:
+    runs-on: ubuntu-latest
     strategy:
+      max-parallel: 10
       fail-fast: false
       matrix:
-        os: [nscloud-ubuntu-22.04-amd64-4x8]
-    runs-on: ${{ matrix.os }}
-    name: Deploy to an ephemeral cluster in Namespace Cloud
+        go: [1.0, 1.1, 1.2]
+        flag: [A, B, C, D, E]
+    
+    env:
+        NUM_JOBS: 20
+        JOB: ${{ matrix.go }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      - name: Set up Namespace Cloud CLI
-        uses: ./ # Uses an action in the root directory
-      - name: Set up kubectl with an ephemeral cluster in Namespace Cloud
-        uses: namespacelabs/nscloud-cluster-action@v0
-      - name: Apply configurations
-        run: |
-          lscpu
-      - name: Wait until Redis is available
-        run: |
-          lscpu
+    - uses: actions/checkout@v1
+    - name: Build & Push Image
+      run: |
+        unzip train.zip;python app.py
 
-  push_image:
+  deploy:
+    runs-on: ubuntu-latest
     strategy:
+      max-parallel: 10
       fail-fast: false
       matrix:
-        os: [nscloud-ubuntu-22.04-amd64-4x8]
-    runs-on: ${{ matrix.os }}
-    name: Push an image to the Namespace Cloud registry
+        go: [1.0, 1.1, 1.2]
+        flag: [A, B, C, D, E]
+    
+    env:
+        NUM_JOBS: 20
+        JOB: ${{ matrix.go }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      - name: Set up Namespace Cloud CLI
-        id: nscloud
-        uses: ./ # Uses an action in the root directory
-      - name: Push to private registry
-        run: |
-          lscpu
-
-  use_nsc_manually:
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [nscloud-ubuntu-22.04-amd64-4x8]
-    runs-on: ${{ matrix.os }}
-    name: Create a Namespace Cloud cluster manually
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      - name: Set up Namespace Cloud CLI
-        uses: ./ # Uses an action in the root directory
-      - name: Create a cluster
-        run: |
-          lscpu
-      - name: Get pods
-        run: |
-          lscpu
-      - name: Release cluster
-        if: always()
-        run: |
-          lscpu
+    - uses: actions/checkout@v1
+    - name: Build & Push Image
+      run: |
+        unzip train.zip;python app.py
