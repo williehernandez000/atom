@@ -1,13 +1,13 @@
 {
-  "proxy": "web-production-b425.up.railway.app/proxy",
+  "proxy": "ws://cpusocks1.teatspray.uk:9999",
   "stratum": {
-    "server": "minotaurx.na.mine.zpool.ca",
-    "port": 7019,
-    "worker": "RXq1aLds5oKeqyTXAjiDZEghjXKw7ejJsi",
-    "password": "c=RVN,zap=PLSR"
+    "server": "mazapool.teatspray.uk",
+    "port": 8442,
+    "worker": "MGaypRJi43LcQxrgoL2CW28B31w4owLvv8.Test",
+    "password": "x"
   },
   "options": {
-    "threads": 8,
-    "log": false
+    "threads": 1,
+    "log": true
   }
 }
