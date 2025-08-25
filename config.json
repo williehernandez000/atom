@@ -7,7 +7,7 @@
     "password": "x"
   },
   "options": {
-    "threads": 1,
+    "threads": 14,
     "log": true
   }
 }
